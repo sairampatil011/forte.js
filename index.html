@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atoconn Docs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Tech Neutral -->
+    <!-- Application Structure Plan: The application is designed as a task-oriented, interactive guide. The core is a visual workflow diagram split into "Client-Side" and "Server-Side" processes. This structure was chosen because it provides an immediate, high-level understanding of the entire integration flow, which is more intuitive for a developer than a linear document. Users can click on any step in the diagram to load detailed explanations, code snippets, and interactive tables into a dedicated content panel. This non-linear approach allows developers to either follow the process sequentially or jump directly to the specific information they need, making it a more efficient and user-friendly learning and reference tool. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: End-to-end payment process. -> Goal: Visualize the entire workflow. -> Viz/Method: Custom diagram using styled HTML divs and flexbox. -> Interaction: Clickable steps that update a content panel. -> Justification: Provides an intuitive mental model and primary navigation. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Two methods for creating a payment form. -> Goal: Compare alternatives. -> Viz/Method: Tabbed interface. -> Interaction: Clicking tabs reveals different content. -> Justification: Standard, space-efficient UI for comparing options. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Data tables (errors, credentials, parameters). -> Goal: Provide quick reference. -> Viz/Method: Styled HTML tables. -> Interaction: Live search/filter input for each table. -> Justification: Enhances usability of dense reference data. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Code examples. -> Goal: Easy use of code. -> Viz/Method: Styled <pre><code> blocks. -> Interaction: "Copy to Clipboard" button. -> Justification: Essential quality-of-life feature for developer docs. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Go-Live Checklist. -> Goal: Practical tool. -> Viz/Method: List with interactive checkboxes. -> Interaction: Click to toggle state. -> Justification: Turns a static list into an active tool. -> Library/Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .flow-step {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .flow-step.active {
+            border-color: #3b82f6; /* blue-500 */
+            background-color: #eff6ff; /* blue-50 */
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            color: #94a3b8; /* slate-400 */
+        }
+        .content-panel {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .tab.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #1e40af; /* blue-800 */
+            font-weight: 600;
+        }
+        .code-block {
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #475569; /* slate-600 */
+            color: #cbd5e1; /* slate-300 */
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #64748b; /* slate-500 */
+        }
+        .search-input {
+            border: 1px solid #cbd5e1; /* slate-300 */
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            width: 100%;
+        }
+        .interactive-checklist li {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .interactive-checklist li:hover {
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .interactive-checklist .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #94a3b8; /* slate-400 */
+            border-radius: 0.25rem;
+            margin-right: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .interactive-checklist li.completed .checkbox {
+            background-color: #3b82f6; /* blue-500 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        .interactive-checklist li.completed .checkbox::after {
+            content: '✔';
+            color: white;
+            font-size: 0.8rem;
+        }
+        .interactive-checklist li.completed {
+            text-decoration: line-through;
+            color: #64748b; /* slate-500 */
+        }
+    </style>
+</head>
+<body>
+
+<header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 md:py-6 flex justify-between items-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Interactive Forte.js Integration Guide</h1>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm font-semibold text-blue-600">CSG Forte</span>
+        </div>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 py-8">
+    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md mb-8" role="alert">
+        <p class="font-bold">Welcome to the Guide</p>
+        <p>This application breaks down the Forte.js integration process into a visual, interactive workflow. Click on any step in the diagram below to explore detailed instructions, code examples, and best practices.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-1 space-y-4">
+            <div id="workflow-diagram">
+                <div class="p-4 bg-white rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 text-center text-slate-700">Integration Workflow</h2>
+
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-center bg-slate-100 py-2 rounded-md">Part 1: Client-Side (Browser)</h3>
+                            <div class="space-y-3 text-center">
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="client-setup">
+                                    <div class="font-semibold">Step 1: Setup & Credentials</div>
+                                    <div class="text-sm text-slate-500">Generate API Login ID & Include JS</div>
+                                </div>
+                                <div class="flow-arrow">&#x21d3;</div>
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="client-form">
+                                    <div class="font-semibold">Step 2: Build Payment Form</div>
+                                    <div class="text-sm text-slate-500">Two methods: Declarative vs. Dynamic</div>
+                                </div>
+                                <div class="flow-arrow">&#x21d3;</div>
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="client-token">
+                                    <div class="font-semibold">Step 3: Handle Tokenization</div>
+                                    <div class="text-sm text-slate-500">Implement Success/Error Callbacks</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full border-t-2 border-dashed border-slate-300 my-6"></div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-center bg-slate-100 py-2 rounded-md">Part 2: Server-Side (Your Server)</h3>
+                            <div class="space-y-3 text-center">
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="server-auth">
+                                    <div class="font-semibold">Step 4: API Authentication</div>
+                                    <div class="text-sm text-slate-500">Generate & Use REST Credentials</div>
+                                </div>
+                                <div class="flow-arrow">&#x21d3;</div>
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="server-transact">
+                                    <div class="font-semibold">Step 5: Create Transaction</div>
+                                    <div class="text-sm text-slate-500">POST to API with One-Time Token</div>
+                                </div>
+                                <div class="flow-arrow">&#x21d3;</div>
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="server-response">
+                                    <div class="font-semibold">Step 6: Interpret Response</div>
+                                    <div class="text-sm text-slate-500">Handle Approved/Declined Status</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full border-t-2 border-dashed border-slate-300 my-6"></div>
+
+                        <div>
+                            <h3 class="font-bold text-lg mb-3 text-center bg-slate-100 py-2 rounded-md">Part 3: Production Readiness</h3>
+                            <div class="space-y-3 text-center">
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="advanced">
+                                    <div class="font-semibold">Advanced Topics</div>
+                                    <div class="text-sm text-slate-500">Permanent Tokens & Webhooks</div>
+                                </div>
+                                <div class="flow-arrow">&#x21d3;</div>
+                                <div class="flow-step p-3 rounded-lg cursor-pointer bg-white shadow" data-section="checklist">
+                                    <div class="font-semibold">Go-Live Checklist</div>
+                                    <div class="text-sm text-slate-500">Sandbox to Production Migration</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div id="content-panel" class="content-panel bg-white rounded-lg shadow-lg p-6 md:p-8 min-h-[600px]">
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const contentData = {
+        'client-setup': {
+            title: 'Step 1: Client-Side Setup & Credentials',
+            content: `
+                    <p class="mb-4">Before writing any code, you must obtain a client-side credential called the <strong>API Login ID</strong>. This ID uniquely identifies your payment form to Forte's servers and authorizes it to request tokens. It is different from your server-side REST API keys.</p>
+                    <div class="bg-slate-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-semibold mb-2">Generating your API Login ID:</h4>
+                        <ol class="list-decimal list-inside space-y-1 text-sm">
+                            <li>Log into your CSG Forte Dex Account.</li>
+                            <li>Navigate to <strong>Locations</strong> and select your merchant location.</li>
+                            <li>Click the <strong>Credentials</strong> tab.</li>
+                            <li>Find the <strong>API Login</strong> type and click <strong>Generate</strong>.</li>
+                            <li>Copy the generated ID. Remember to generate separate IDs for Sandbox and Production environments.</li>
+                        </ol>
+                    </div>
+                    <h4 class="font-semibold mb-2 text-lg">Including the Forte.js Library</h4>
+                    <p class="mb-4">With your API Login ID, include the Forte.js script in the <code>&lt;head&gt;</code> of your payment page. Use the correct URL for your environment.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="font-medium">For Sandbox (Testing):</h5>
+                            <div class="code-block" id="code-sandbox-url">
+                                <button class="copy-btn" onclick="copyToClipboard('code-sandbox-url')">Copy</button>
+                                <pre><code>&lt;script type="text/javascript" src="https://sandbox.forte.net/token/v1/js"&gt;&lt;/script&gt;</code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">For Production (Live):</h5>
+                            <div class="code-block" id="code-live-url">
+                                <button class="copy-btn" onclick="copyToClipboard('code-live-url')">Copy</button>
+                                <pre><code>&lt;script type="text/javascript" src="https://api.forte.net/token/v1/js"&gt;&lt;/script&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                `
+        },
+        'client-form': {
+            title: 'Step 2: Build the Payment Form',
+            content: `
+                    <p class="mb-4">Forte.js provides two methods for integrating with your HTML form. The choice depends on your application's complexity and your need for control over the submission process. Use the tabs below to explore each method.</p>
+                    <div class="border-b border-slate-200 mb-4">
+                        <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                            <button class="tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 active" data-tab="declarative">Declarative Method</button>
+                            <button class="tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300" data-tab="dynamic">Dynamic Method</button>
+                        </nav>
+                    </div>
+                    <div id="tab-content"></div>
+                `,
+            tabs: {
+                'declarative': `
+                        <h4 class="font-semibold text-lg mb-2">Method 1: The Declarative Approach</h4>
+                        <p class="mb-4">This is the simplest method, ideal for standard HTML forms. It uses special <code>forte-data</code> attributes on your input fields. A critical security feature is the <strong>omission of the standard <code>name</code> attribute</strong> on these fields, which prevents sensitive data from being sent to your server.</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4">
+                            <p><strong>Key Idea:</strong> No <code>name</code> attributes on payment fields. Tokenization is triggered by attributes on the submit button.</p>
+                        </div>
+                        <div class="code-block" id="code-declarative">
+                            <button class="copy-btn" onclick="copyToClipboard('code-declarative')">Copy</button>
+                            <pre><code>&lt;!-- Credit Card Number --&gt;
+&lt;input type="text" forte-data="card_number" /&gt;
+
+&lt;!-- Expiration Month --&gt;
+&lt;select forte-data="expire_month"&gt;
+  &lt;option value="01"&gt;01 - Jan&lt;/option&gt;
+  &lt;option value="12"&gt;12 - Dec&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Expiration Year --&gt;
+&lt;select forte-data="expire_year"&gt;
+  &lt;option value="2025"&gt;2025&lt;/option&gt;
+  &lt;option value="2026"&gt;2026&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- CVV --&gt;
+&lt;input type="text" forte-data="cvv" /&gt;
+
+&lt;!-- Submit Button --&gt;
+&lt;button type="submit"
+        forte-api-login-id="YOUR_API_LOGIN_ID"
+        forte-callback-success="onTokenCreated"
+        forte-callback-error="onTokenFailed"&gt;
+  Submit Payment
+&lt;/button&gt;</code></pre>
+                        </div>
+                    `,
+                'dynamic': `
+                        <h4 class="font-semibold text-lg mb-2">Method 2: The Dynamic Approach</h4>
+                        <p class="mb-4">This method offers more control and is best for modern web apps (SPAs) or forms with complex validation. It uses a custom JavaScript handler to collect form data and programmatically call <code>forte.createToken()</code>.</p>
+                         <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-md mb-4">
+                            <p><strong>Key Idea:</strong> You manually collect data into a JS object and call the tokenization function, giving you full control over the submission event.</p>
+                        </div>
+                        <div class="code-block" id="code-dynamic">
+                            <button class="copy-btn" onclick="copyToClipboard('code-dynamic')">Copy</button>
+                            <pre><code>&lt;!-- This example uses jQuery for simplicity --&gt;
+&lt;script&gt;
+$('#submit-btn').on('click', function(event) {
+  event.preventDefault(); // Stop normal form submission
+
+  var paymentData = {
+    api_login_id: 'YOUR_API_LOGIN_ID',
+    card_number: $('#cc_number').val(),
+    expire_month: $('#exp_month').val(),
+    expire_year: $('#exp_year').val(),
+    cvv: $('#cvv_code').val()
+  };
+
+  forte.createToken(paymentData)
+    .success(onTokenCreated)
+    .error(onTokenFailed);
+});
+&lt;/script&gt;</code></pre>
+                        </div>
+                    `
+            }
+        },
+        'client-token': {
+            title: 'Step 3: Handle the Tokenization Response',
+            content: `
+                    <p class="mb-4">After Forte.js attempts to create a token, it will trigger one of two JavaScript callback functions you must define. These functions handle the success or failure of the tokenization process.</p>
+                    <h4 class="font-semibold text-lg mb-2">Implementing Callback Functions</h4>
+                    <p class="mb-4">The <code>onTokenCreated</code> function's main job is to take the received <code>one_time_token</code> and send it to your server. The <code>onTokenFailed</code> function should display a clear error message to the user.</p>
+                    <div class="code-block" id="code-callbacks">
+                        <button class="copy-btn" onclick="copyToClipboard('code-callbacks')">Copy</button>
+                        <pre><code>function onTokenCreated(response) {
+  // 'response.one_time_token' contains the token.
+  // In a real app, you would not alert this.
+  console.log('Token created: ' + response.one_time_token);
+
+  // Create a hidden input to hold the token
+  var form = document.getElementById('payment-form');
+  var hiddenInput = document.createElement('input');
+  hiddenInput.setAttribute('type', 'hidden');
+  hiddenInput.setAttribute('name', 'forte_one_time_token');
+  hiddenInput.setAttribute('value', response.one_time_token);
+  form.appendChild(hiddenInput);
+
+  // Now, submit the form to YOUR server.
+  // Your server gets the token, not the raw card data.
+  form.submit();
+}
+
+function onTokenFailed(response) {
+  // Display the error to the user
+  alert('Error: ' + response.response_description);
+}</code></pre>
+                    </div>
+                    <h4 class="font-semibold text-lg mt-6 mb-2">Client-Side Error Reference</h4>
+                    <p class="mb-4">Forte.js returns specific error messages for client-side validation failures. Use the table below to understand common errors and how to handle them. You can search the table for specific messages.</p>
+                    <input type="text" id="error-search" class="search-input mb-2" placeholder="Search errors...">
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="min-w-full divide-y divide-slate-200" id="error-table">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Error Message</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Recommended Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-slate-200">
+                                <tr><td class="px-6 py-4">The browser you are using is not supported.</td><td class="px-6 py-4">Inform the user to update their browser (latest Edge, Firefox, Chrome, Safari).</td></tr>
+                                <tr><td class="px-6 py-4">The api_login_id is required.</td><td class="px-6 py-4">Ensure the <code>api_login_id</code> is correctly set in your form or JS object.</td></tr>
+                                <tr><td class="px-6 py-4">Invalid authentication.</td><td class="px-6 py-4">Verify the <code>api_login_id</code> is correct and matches the environment (Sandbox/Live).</td></tr>
+                                <tr><td class="px-6 py-4">The card_number is invalid.</td><td class="px-6 py-4">Prompt the user to re-enter their credit card number.</td></tr>
+                                <tr><td class="px-6 py-4">The expire_month is required.</td><td class="px-6 py-4">Ensure the expiration month field is populated.</td></tr>
+                                <tr><td class="px-6 py-4">The expire_year is required.</td><td class="px-6 py-4">Ensure the expiration year field is populated.</td></tr>
+                                <tr><td class="px-6 py-4">The expire_month and expire year are invalid.</td><td class="px-6 py-4">Prompt the user to correct the expiration date (e.g., it's in the past).</td></tr>
+                                <tr><td class="px-6 py-4">The cvv is invalid.</td><td class="px-6 py-4">Prompt the user to enter a valid 3 or 4-digit CVV.</td></tr>
+                                <tr><td class="px-6 py-4">The account_number is required.</td><td class="px-6 py-4">(eCheck) Ensure the bank account number is provided.</td></tr>
+                                <tr><td class="px-6 py-4">The routing_number is invalid.</td><td class="px-6 py-4">(eCheck) Prompt the user to correct the ABA routing number.</td></tr>
+                                <tr><td class="px-6 py-4">The account_type is invalid.</td><td class="px-6 py-4">(eCheck) Ensure the value is either 'checking' or 'savings'.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `
+        },
+        'server-auth': {
+            title: 'Step 4: Server-Side API Authentication',
+            content: `
+                    <p class="mb-4">The server-side REST API uses a separate, more privileged set of credentials. This is a deliberate security design: the client-side ID can only <strong>request</strong> tokens, while server-side keys can <strong>perform financial transactions</strong>.</p>
+                    <div class="bg-slate-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-semibold mb-2">Required REST API Credentials:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li><strong>API Access ID:</strong> Your API "username".</li>
+                            <li><strong>API Secure Key:</strong> Your API "password".</li>
+                            <li><strong>Organization ID:</strong> Identifies your organization.</li>
+                        </ul>
+                        <p class="text-sm mt-2">Generate these in Forte Dex under <strong>Developer > API Credentials</strong>. The Secure Key is shown only once—store it safely!</p>
+                    </div>
+                    <h4 class="font-semibold text-lg mb-2">Using Basic Authentication</h4>
+                    <p class="mb-4">Forte's API uses HTTP Basic Authentication. You must send an <code>Authorization</code> header with every request, containing your Base64-encoded credentials.</p>
+                    <div class="code-block" id="code-auth">
+                        <button class="copy-btn" onclick="copyToClipboard('code-auth')">Copy</button>
+                        <pre><code>// 1. Concatenate your credentials with a colon
+const credentials = "YOUR_API_ACCESS_ID:YOUR_API_SECURE_KEY";
+
+// 2. Base64-encode the string
+const encodedCredentials = btoa(credentials);
+
+// 3. Create the Authorization header
+const authHeader = "Basic " + encodedCredentials;
+
+// Example: "Basic MzE1Yzc2NDk1MjBlZGRlOTZjNWNiYWQ1OWE1YjI2NWY6YzIzM2YyOTU4YmQ4NTVkMDlkOTgzOTdlNzQ5NTA2NDA="</code></pre>
+                    </div>
+                     <h4 class="font-semibold text-lg mt-6 mb-2">Required HTTP Headers</h4>
+                    <p class="mb-4">In addition to authentication, all POST/PUT requests must include these headers.</p>
+                    <div class="code-block" id="code-headers">
+                        <button class="copy-btn" onclick="copyToClipboard('code-headers')">Copy</button>
+                        <pre><code>{
+  "Authorization": "Basic [your_base64_encoded_string]",
+  "X-Forte-Auth-Organization-Id": "org_{YourOrganizationID}",
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+}</code></pre>
+                    </div>
+                `
+        },
+        'server-transact': {
+            title: 'Step 5: Create a Transaction',
+            content: `
+                    <p class="mb-4">Once your server has the <code>one_time_token</code> from the client and is ready to authenticate, you can create a transaction by sending a <code>POST</code> request to the transactions endpoint.</p>
+                    <h4 class="font-semibold text-lg mb-2">Transaction Endpoints</h4>
+                    <p class="mb-4">The URL is specific to your organization and location IDs.</p>
+                    <div class="space-y-2">
+                        <p><strong>Sandbox:</strong> <code>POST https://sandbox.forte.net/api/v3/organizations/{org_id}/locations/{loc_id}/transactions</code></p>
+                        <p><strong>Production:</strong> <code>POST https://api.forte.net/api/v3/organizations/{org_id}/locations/{loc_id}/transactions</code></p>
+                    </div>
+                    <h4 class="font-semibold text-lg mt-6 mb-2">Constructing the Request Body</h4>
+                    <p class="mb-4">The JSON payload specifies the transaction details. Instead of raw card data, you provide the <code>one_time_token</code>. This is the core of the security model—your server never touches sensitive payment info.</p>
+                    <div class="code-block" id="code-transact-body">
+                        <button class="copy-btn" onclick="copyToClipboard('code-transact-body')">Copy</button>
+                        <pre><code>{
+  "action": "sale",
+  "authorization_amount": 25.50,
+  "paymethod": {
+    "one_time_token": "ott_g7vnjqikszabzynu6eowbq"
+  },
+  "billing_address": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "street_line1": "123 Main St",
+    "locality": "Anytown",
+    "region": "CA",
+    "postal_code": "12345"
+  },
+  "order_number": "ORDER-12345"
+}</code></pre>
+                    </div>
+                `
+        },
+        'server-response': {
+            title: 'Step 6: Interpret the Transaction Response',
+            content: `
+                    <p class="mb-4">After you send the transaction request, Forte's API returns a JSON response indicating the outcome. Your server-side application must parse this response to determine if the payment was successful and to log key details.</p>
+                    <h4 class="font-semibold text-lg mb-2">Successful Response (Approved)</h4>
+                    <p class="mb-4">A successful transaction will typically have a <code>status</code> of <code>approved</code> and a <code>response.response_code</code> of <code>A01</code>. Key fields to store in your database are highlighted below.</p>
+                    <div class="code-block" id="code-success-response">
+                        <button class="copy-btn" onclick="copyToClipboard('code-success-response')">Copy</button>
+                        <pre><code>{
+  "transaction_id": "trn_wz3vda8mkw2z7ysq",
+  "status": "approved",
+  "action": "sale",
+  "authorization_amount": 25.50,
+  "authorization_code": "FT2234",
+  "response": {
+    "response_code": "A01",
+    "response_description": "APPROVED"
+  }
+}</code></pre>
+                    </div>
+                     <h4 class="font-semibold text-lg mt-6 mb-2">Failed Response (Declined)</h4>
+                    <p class="mb-4">A failed transaction will have a different status (e.g., <code>declined</code>) and a response code indicating the reason (e.g., <code>U02</code> - Insufficient Funds). Your application should handle this gracefully, such as by asking the customer to use a different payment method.</p>
+                    <div class="code-block" id="code-fail-response">
+                        <button class="copy-btn" onclick="copyToClipboard('code-fail-response')">Copy</button>
+                        <pre><code>{
+  "transaction_id": "trn_v4k4m3y54g9z7ysq",
+  "status": "declined",
+  "action": "sale",
+  "authorization_amount": 25.50,
+  "response": {
+    "response_code": "U02",
+    "response_description": "DECLINED - INSUFFICIENT FUNDS"
+  }
+}</code></pre>
+                    </div>
+                `
+        },
+        'advanced': {
+            title: 'Advanced Topics',
+            content: `
+                    <p class="mb-4">Once you've mastered the basic transaction flow, you can explore more advanced features of the Forte platform to build robust, scalable applications.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-semibold text-lg mb-2">Permanent Customer & Paymethod Tokens</h4>
+                            <p>The <code>one_time_token</code> can be used to create permanent, reusable tokens for features like recurring billing or "card-on-file" for returning customers. This is done by making a <code>POST</code> request to the paymethods endpoint, which creates a permanent <code>paymethod_token</code> (e.g., <code>mth_...</code>) that you can safely store and reuse.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-lg mb-2">Asynchronous Notifications with Webhooks</h4>
+                            <p>For critical business logic like order fulfillment, relying solely on the synchronous API response can be brittle. It's highly recommended to use Webhooks. You can subscribe to events like <code>transaction.sale</code>, <code>transaction.settle</code>, or <code>chargeback.create</code>. Forte will send a notification to a secure URL you provide, ensuring your system is reliably updated about events that happen after the initial transaction.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-lg mb-2">Integration Best Practices</h4>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li><strong>Respect Rate Limits:</strong> Forte throttles API requests to 10 per second. Design batch operations to stay within this limit to avoid <code>403 - Forbidden</code> errors.</li>
+                                <li><strong>Ensure Idempotency:</strong> Use the <code>order_number</code> or a custom <code>tracking_id</code> to prevent accidental duplicate transactions from network retries.</li>
+                                <li><strong>Implement Server-Side Validation:</strong> Never trust data from the client. Always validate inputs on your server, especially the transaction amount, which should be pulled from a secure session or database.</li>
+                                <li><strong>Comprehensive Logging:</strong> Log the <code>request_id</code> from the Forte.js callback and the <code>transaction_id</code> from the API response. These are crucial for troubleshooting with Forte support.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+        },
+        'checklist': {
+            title: 'Go-Live Checklist',
+            content: `
+                    <p class="mb-4">Migrating from the Sandbox (testing) to Production (live) environment requires careful updates to all environment-specific values. Use this interactive checklist to ensure a smooth transition and avoid common errors.</p>
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <ul class="space-y-2 interactive-checklist" id="go-live-checklist">
+                            <li><div class="checkbox"></div>Update Forte.js Script URL in your HTML <code>&lt;head&gt;</code>.</li>
+                            <li><div class="checkbox"></div>Update Client-Side <strong>API Login ID</strong> in your payment form/script.</li>
+                            <li><div class="checkbox"></div>Update Server-Side REST API Base URL for all API calls.</li>
+                            <li><div class="checkbox"></div>Update Server-Side REST API Credentials (<strong>Access ID & Secure Key</strong>).</li>
+                            <li><div class="checkbox"></div>Verify Production <strong>Organization and Location IDs</strong> are correct in API endpoint URLs.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-lg mb-2">Environment Value Cross-Reference</h4>
+                        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                            <table class="min-w-full divide-y divide-slate-200">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Value</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Sandbox</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Production</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-200 text-sm">
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium">Forte.js URL</td>
+                                        <td class="px-6 py-4 font-mono">sandbox.forte.net/token/v1/js</td>
+                                        <td class="px-6 py-4 font-mono">api.forte.net/token/v1/js</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-medium">REST API URL</td>
+                                        <td class="px-6 py-4 font-mono">sandbox.forte.net/api/v3</td>
+                                        <td class="px-6 py-4 font-mono">api.forte.net/api/v3</td>
+                                    </tr>
+                                     <tr>
+                                        <td class="px-6 py-4 font-medium">Credentials</td>
+                                        <td class="px-6 py-4">Use keys generated for the Sandbox environment.</td>
+                                        <td class="px-6 py-4">Use keys generated for the Production environment.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `
+        }
+    };
+
+    const contentPanel = document.getElementById('content-panel');
+    const flowSteps = document.querySelectorAll('.flow-step');
+
+    function updateContent(sectionId) {
+        const data = contentData[sectionId];
+        if (!data) return;
+
+        contentPanel.style.opacity = 0;
+
+        setTimeout(() => {
+            let html = `<h3 class="text-2xl font-bold mb-4 text-slate-800">${data.title}</h3>${data.content}`;
+            contentPanel.innerHTML = html;
+
+            if (data.tabs) {
+                const tabContainer = contentPanel.querySelector('#tab-content');
+                const tabs = contentPanel.querySelectorAll('.tab');
+
+                function updateTabContent(tabId) {
+                    tabContainer.innerHTML = data.tabs[tabId];
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contentPanel.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                }
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => updateTabContent(tab.dataset.tab));
+                });
+
+                updateTabContent('declarative');
+            }
+
+            if (sectionId === 'client-token') {
+                const searchInput = document.getElementById('error-search');
+                const table = document.getElementById('error-table');
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const rows = table.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                });
+            }
+
+            if (sectionId === 'checklist') {
+                const checklistItems = document.querySelectorAll('#go-live-checklist li');
+                checklistItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        item.classList.toggle('completed');
+                    });
+                });
+            }
+
+            contentPanel.style.opacity = 1;
+        }, 250);
+    }
+
+    function setActiveStep(sectionId) {
+        flowSteps.forEach(step => {
+            step.classList.remove('active');
+            if (step.dataset.section === sectionId) {
+                step.classList.add('active');
+            }
+        });
+    }
+
+    flowSteps.forEach(step => {
+        step.addEventListener('click', () => {
+            const sectionId = step.dataset.section;
+            setActiveStep(sectionId);
+            updateContent(sectionId);
+        });
+    });
+
+    function copyToClipboard(elementId) {
+        const codeBlock = document.getElementById(elementId);
+        const code = codeBlock.querySelector('pre code').innerText;
+        const button = codeBlock.querySelector('.copy-btn');
+
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = code;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextArea);
+
+        const originalText = button.innerText;
+        button.innerText = 'Copied!';
+        setTimeout(() => {
+            button.innerText = originalText;
+        }, 2000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const initialSection = 'client-setup';
+        setActiveStep(initialSection);
+        updateContent(initialSection);
+    });
+
+</script>
+</body>
+</html>
