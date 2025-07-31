@@ -1,1 +1,1 @@
-Interactive guide to forte.js integration
+# Interactive guide for forte.js integration.
